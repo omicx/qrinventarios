@@ -1,0 +1,8 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "qrReader",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www",
+  "cordova": {}
+}

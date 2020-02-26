@@ -1,0 +1,109 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    
+    <ion-title>
+      INVENTORY APP
+    </ion-title>
+    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" padding>
+
+  <ion-item>
+    <ion-input type="text" [(ngModel)]="api_url"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Scanned Code Value</ion-label>
+    <ion-input type="text" placeholder="QR CODE Data" [(ngModel)]="qrData"></ion-input>
+  </ion-item>
+
+  <ion-button expand="full" (click)="scanCode()" color="secondary">
+    <ion-icon name="qr-code-outline"></ion-icon>
+    SCAN QR
+  </ion-button>
+  
+
+  <div *ngIf="ver_segmentos==='visualizar' "> 
+
+    <ion-segment [(ngModel)]="elementType">
+      <ion-segment-button value="canvas">
+        <ion-label>Datos Generales</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="img">
+        <ion-label>Espacio Fisico</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="url">
+        <ion-label>Observaciones</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="firma">
+        <ion-label>Actualizar</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+  
+
+  <ion-card *ngIf="qrData" text-center>
+    <ngx-qrcode [qrc-element-type]="elementType" [qrc-value] = "qrData" qrc-class="my-code">
+    </ngx-qrcode>    
+  </ion-card>
+
+  <ion-card *ngIf="scannedCode">
+
+    <ion-card-content>      
+      Result from Scan: {{scannedCode}} <br>
+
+      <ion-item>
+        <ion-chip>
+          <ion-label color="secondary" style="font-weight: bold;">Descripcion</ion-label>
+        </ion-chip>
+        <ion-input type="text" [(ngModel)]="product_description" name="product_description"></ion-input>
+      </ion-item> 
+      <ion-item>
+        <ion-label style="font-weight: bold;">Imagen</ion-label>
+        <ion-thumbnail>
+          <ion-img [src]="product_img_url"></ion-img>
+        </ion-thumbnail>        
+        
+      </ion-item>
+
+
+      
+        <ion-list *ngIf="elementType==='firma'">
+          <ion-list-header>
+            <ion-label>
+              Inventarios Fisicos
+            </ion-label>
+          </ion-list-header>
+    
+          <ion-item>
+            <ion-label>Disponibles</ion-label>
+            <ion-select (ionChange)="radioEventoSelect($event)" [(ngModel)]="rd_inventario_selected">
+              <ion-select-option *ngFor="let item of rd_list_inventarios" value="{{item.id}}">{{item.id + ' - ' + item.descripcion}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+     
+        </ion-list>
+      
+
+      <ion-button expand="full" color="tertiary" (click)="downloadQR()" *ngIf="elementType==='firma'">
+        <ion-icon name="save" slot="start"></ion-icon>
+        SAVE
+      </ion-button>
+
+    </ion-card-content>
+  </ion-card>
+
+
+  
+
+
+
+</div>
+
+  
+</ion-content>
