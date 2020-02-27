@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { OnInit, OnDestroy, AfterViewInit } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Platform, LoadingController } from '@ionic/angular';
 import { Observable } from 'rxjs';
 import { HttpClient} from "@angular/common/http";
+import {catchError, finalize} from 'rxjs/operators';
 
 import {BarcodeScannerOptions,BarcodeScanner} from "@ionic-native/barcode-scanner/ngx";
 import { Base64ToGallery } from '@ionic-native/base64-to-gallery/ngx';
@@ -19,31 +20,40 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   backButtonSubscription; 
 
   //qrData = '1581537725000001';
-  qrData = '';
+  qrData = '1581537725000001';
   scannedCode = null;
   rd_list_inventarios:any;
   ver_segmentos:string = "ocultar";
  
   barcodeScannerOptions: BarcodeScannerOptions;
-  elementType : 'url' | 'canvas' | 'img' | 'firma' = 'canvas';
+  elementType : 'url' | 'canvas' | 'img' | 'update' | 'firma' = 'canvas';
 
   
-  //api_url = "https://inventarioitst.abzoft.com";
-  api_url = "http://app.inventariositst";
+  api_url = "https://inventarioitst.abzoft.com";
+  //api_url = "http://app.inventariositst";
+  //api_url = "http://sysinvent.abzoft";
 
-  rd_inventario_selected:any;
+  rd_inventario_selected:any=null;
+  rd_inventario_valued : boolean = false;
   
+  product_identificador_unico : any;
   product_description : any;
+  product_observaiones : any;
+  inventario_fisico_nombre : any;
   product_id : any;
   dataProducto : any;
+  resultData:any;
   product_img_url:any;
+  product_num_serie:any;
+  product_marca:any;
     
   constructor(
     private platform: Platform, 
     private barcodeScanner: BarcodeScanner,
     private base64ToGallery: Base64ToGallery,
     private toastCtrl:ToastController,
-    private http: HttpClient 
+    private http: HttpClient ,
+    private loadingCtrl: LoadingController
     ) {
 
     //Options
@@ -54,11 +64,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
     this.product_id = "";
     this.product_description = "";
-
     this.rd_inventario_selected="";
 
-
-    this.loadInventariosLar();
+    console.log("rd_inventario_valued: "+this.rd_inventario_valued);
+    this.loadInventarios();
     
   }//construct
 
@@ -76,73 +85,59 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
   radioEventoSelect(event) {
     this.rd_inventario_selected     = event.detail.value;
-    //console.log("EventoSelected: " + this.rd_inventario_selected);
-  }//function
-
-  loadInventariosLar(){
-    
-    let data:Observable<any>;
-    this.http.get(this.api_url+'/api/getevents')
-    .subscribe(result => { 
-      console.log("getevents: "+result);
-                            this.rd_list_inventarios = result;
-               },
-               error  => { 
-                            console.log("Error en loadInventarios: " + error)
-               }
-    );  
+    this.rd_inventario_valued = true;
+    this.inventario_fisico_nombre = event.detail.text;
 
     
   }//function
+
+
 
   loadInventarios(){
-    /*
+    
     let data:Observable<any>;
     this.http.get(this.api_url+'/web-services/get-inventarios-list')
     .subscribe(result => { 
                             this.rd_list_inventarios = result;
                },
                error  => { 
-                            console.log("Error en loadInventarios: " + error)
+                            alert("Error en loadInventarios: " + error.status + " "+ error.message)
                }
-    );  */
-
-    
-    this.rd_list_inventarios = [
-      {id:"1",
-       descripcion:"Inventario 1 2020"
-      },
-      {id:"2",
-       descripcion:"Inventario 2 2020"
-      }] 
+    );  
   }//function
 
   
-  scanCode() {
-    /*
+   scanCode() {
+    
+  
+  
+
+      if(this.rd_inventario_valued == false) {
+        this.msgToast("Selecciona Opcion de Inventario");
+        return;
+      }
+
+      /*
     this.barcodeScanner
       .scan()
       .then(barcodeData => {
         this.scannedCode = barcodeData.text;
         this.qrData      = this.scannedCode;
         this.product_id = this.scannedCode;
+        this.product_identificador_unico = this.qrData;
       })
       .catch(err => {
         this.product_description = "Error: " + err ;
       }); 
-      */
+      */      
+
       
-      
-      
-     this.scannedCode = this.qrData;// '1581537725000001';
+     this.scannedCode = this.qrData;
      this.qrData = this.scannedCode;
      this.product_id = this.scannedCode; 
+     this.product_identificador_unico = this.qrData;
 
-     console.log("qrData" + this.qrData);
-     
-
-
-     this.getDataProductLar();
+     this.getDataProduct();
 
      this.ver_segmentos = "visualizar";
      
@@ -150,85 +145,21 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   }//function
 
 
-  /*
-  Obtiene las propiedades del Producto publicado en el web service por medio del product_id
-  @param send: product_id
-  */
- getDataProductLar(){
-    
-  let identificador_unico = this.product_id;
-
-    let datosenviados = {
-      identificador_unico   : identificador_unico,
-      inventario_id         : this.rd_inventario_selected
-    };
-
-  this.http.post(this.api_url+'/api/getproduct', 
-  JSON.stringify(datosenviados),{observe: 'response'})
-     .subscribe(dataRec => {
-
-      console.log(dataRec);
-
-      this.dataProducto = dataRec.body;
-      //console.log(this.dataProducto);
-
-
-      this.product_id           = this.dataProducto.numero_serie;
-      this.product_description  = this.dataProducto.descripcion_larga;
-      this.product_img_url      = this.dataProducto.fotografia;
-      }, error => {
-        this.product_description = "error post -> "+ error;
-     });   
-
-     
-
-}//function
-
-
+ 
 
 
   /*
   Obtiene las propiedades del Producto publicado en el web service por medio del product_id
   @param send: product_id
   */
-  getDataProduct(){
-    
-    /*
-    let data:Observable<any>;
-    data = this.http.get('http://app.inventariositst/api/getproduct');
-    data.subscribe(result => {
+  async getDataProduct(){
+    let loading = await this.loadingCtrl.create({message:'Espere..',
 
-      this.dataProducto = result.product[0];
+  });
+  await loading.present();
 
-      //console.log(result.product[0].descripcion);
-      //console.log(this.dataProducto);
 
-      this.product_id = result.product[0].numero_serie;
-      this.product_description =result.product[0].descripcion;
-      this.product_img_url = this.dataProducto.fotografia;
-
-    });
-*/
-    
-    
-  
-    
-    /*
-    //btoa(this.product_id)   encripta en base64 y funciona con el cakephp3.8
-    data = this.http.get(this.api_url+'/web-services/get-data-product/'+btoa(this.product_id) );
-    data.subscribe(result => { 
-      this.product_description = result.body["descripcion_larga"];
-      console.log(result.id + " - " +result.persona.nombre  );
-    }); 
-*/
-    //console.log(btoa(this.product_id));
-    
-      //MTU4MTUzNzcyNTAwMDAwMQ==
-      //console.log(atob("MTU4MTUzNzcyNTAwMDAwMQ==")); // password
-
-      //console.log(this.api_url);
-
-      let identificador_unico = btoa(this.product_id);
+      let identificador_unico = btoa(this.product_id); //encripta el id para mandarlo
 
       let datosenviados = {
         identificador_unico   : identificador_unico,
@@ -236,21 +167,21 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
       };
   
     this.http.post(this.api_url+'/web-services/get-data-product', 
-    JSON.stringify(datosenviados),{observe: 'response'})
-       .subscribe(dataRec => {
-
-        //console.log(dataRec);
-
+    JSON.stringify(datosenviados),{observe: 'response'}). 
+    pipe( finalize( () => loading.dismiss() ) ).
+    subscribe(dataRec => {
         this.dataProducto = dataRec.body;
-        //console.log(this.dataProducto);
-
-
-        this.product_id           = this.dataProducto.numero_serie;
+        this.product_id           = this.dataProducto.id;
         this.product_description  = this.dataProducto.descripcion_larga;
         this.product_img_url      = this.dataProducto.fotografia;
-        }, error => {
+        this.product_num_serie    = this.dataProducto.numero_serie;
+        this.product_marca        = this.dataProducto.marca.name;
+
+        }, 
+        error => {
           this.product_description = "error post -> "+ error;
        });   
+
 
        
 
@@ -258,14 +189,34 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
 
 
-  saveRegistro(){
+  
+  insertInventarioFisico(){
+    let ident_unico = btoa(this.product_identificador_unico); //encripta el id para mandarlo
+
     let datosenviados = {
-      inventario_id   : "",
-      producto_id     : this.product_id,
-      fecha_inventario: "date",
-      tipo_inventario : "fisico",
-      accion: 'register'
+      identificador_unico    : ident_unico,
+      producto_id            : this.product_id,
+      observaciones          : this.product_observaiones,
+      inventario_fisico_id   : this.rd_inventario_selected
     };
+
+  this.http.post(this.api_url+'/web-services/insert-inventario-fisico', 
+  JSON.stringify(datosenviados),{observe: 'response'})
+     .subscribe(dataRec => {
+      this.resultData = dataRec.body;
+      console.log(this.resultData);
+
+      if( this.resultData['action'] == "SUCCESS"){
+          this.msgToast( this.resultData['message'] );
+      }else{
+        this.msgToastError( this.resultData['message'] );
+      }
+      
+      }, 
+      error => {
+        alert( error.status +"  "+ error.message);
+        //this.product_description = "error post -> "+ error;
+     });   
 
 
   }//function
@@ -294,7 +245,41 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
 
 
+  async msgToast(mess) {
+    const toast = await this.toastCtrl.create({
+      message: mess,
+      position: 'middle',
+      animated:true,
+      color:'success',
+      duration: 2000
+    });
+    toast.present();
+  }//function
+
+
+  async msgToastError(mess) {
+    const toast = await this.toastCtrl.create({
+      message: mess,
+      position: 'middle',
+      animated:true,
+      color:'danger',
+      buttons: [
+      {
+          text: 'Aceptar',
+          role: 'cancel',
+          handler: () => {
+            //console.log('Cancel clicked');
+          }
+        }
+      ]
+    });
+    toast.present();
+  }//function
 
 
 
-}
+
+
+
+
+}//class
