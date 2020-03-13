@@ -1,0 +1,191 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      PRODUCT UPDATE
+    </ion-title>    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" padding>
+
+  <ion-button expand="full" (click)="scanCode()" color="secondary">
+    <ion-icon name="qr-code-outline"></ion-icon>
+    SCAN QR
+  </ion-button>
+  
+
+  <div *ngIf="ver_segmentos==='visualizar' "> 
+
+    <ion-segment [(ngModel)]="elementType">
+      <ion-segment-button value="canvas">
+        <ion-label>Datos Generales</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+  <ion-card *ngIf="scannedCode">
+    <ion-card-content>  
+      <div *ngIf="elementType==='canvas'">
+            <ion-item class="ionic-text-center">
+              <img class="displayed"  height="150px" width="150px" src="{{product_img_url}}">
+            </ion-item>
+                            
+            <ion-textarea color="dark" [(ngModel)]="product_description" readonly>
+          </ion-textarea>       
+         
+        
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Numero Serie</ion-label>
+            <ion-text type="text">{{product_num_serie}} </ion-text>
+          </ion-item>
+
+         
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Marca</ion-label>
+            <ion-text type="text">{{product_marca}} </ion-text>
+          </ion-item>
+         
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Folio Factura</ion-label>
+            <ion-text type="text">{{product_folio_factura}} </ion-text>           
+          </ion-item>
+         
+
+      
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Material Tipo</ion-label>
+            <ion-text type="text">{{product_material_tipo}}</ion-text>
+          </ion-item>
+        
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Color</ion-label>
+            <ion-text type="text" >{{product_color}}</ion-text>
+          </ion-item>
+        
+
+        
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Tipo Adquisicion</ion-label>
+            <ion-text type="text">{{product_tipo_adquisicion}}</ion-text>
+          </ion-item>
+         
+            <ion-item>
+              <ion-label color="secondary" style="font-weight: bold;">Estado</ion-label>
+              <ion-text type="text">{{product_estado_fisico}}</ion-text>           
+            </ion-item>
+                  
+      
+      
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Grupo</ion-label>
+            <ion-text type="text">{{product_grupo_bien}}</ion-text>
+          </ion-item>
+         
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Categoria</ion-label>
+            <ion-text type="text" >{{product_grupo_bien_categoria}}</ion-text>
+          </ion-item>
+         
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Subcategoria</ion-label>
+            <ion-text type="text">{{product_grupo_bien_subcategoria}}</ion-text>           
+          </ion-item>
+          
+
+       
+            <ion-item>
+              <ion-label color="secondary" style="font-weight: bold;">Partida</ion-label>
+              <ion-text type="text"> {{product_partida}}</ion-text>
+            </ion-item>            
+          
+      
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Concepto partida</ion-label>
+          </ion-item>
+          <ion-item>            
+            <ion-text type="text">{{product_partida_concepto}}</ion-text>
+          </ion-item>
+        
+          <ion-item>       
+          <ion-label style="color:red; font-weight: bold;">Actualizar Datos de Resguardo</ion-label>
+          </ion-item>
+
+
+       
+          
+          <ion-item>
+            <ion-text type="text" class="text-bl">{{product_responsable}}</ion-text>
+          </ion-item>
+               
+              <ion-item>    
+                <ion-label>Responsable</ion-label> 
+                <ion-select (ionChange)="radioResponsablesSelect($event)" [(ngModel)]="rd_responsable_selected">
+                  <ion-select-option *ngFor="let item of rd_list_responsables" value="{{item.id}}">{{item.id + ' - ' + item.nombre+ ' - ' + item.ap_paterno + ' - ' + item.ap_materno}}</ion-select-option>
+                </ion-select>
+              </ion-item>  
+
+         
+          <ion-item>
+            <ion-text type="text" class="text-bl">{{product_resguardante}}</ion-text>
+          </ion-item>
+          <ion-item>            
+            <ion-label>Resguardante</ion-label>            
+            <ion-select (ionChange)="radioPersonasSelect($event)" [(ngModel)]="rd_personas_selected">
+              <ion-select-option *ngFor="let item of rd_list_personas" value="{{item.id}}">{{item.id + ' - ' + item.nombre+ ' - ' + item.ap_paterno + ' - ' + item.ap_materno}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          
+       
+          <ion-item>
+            <ion-text type="text" class="text-bl">{{product_espacio_fisico}}</ion-text>
+          </ion-item>
+          <ion-item>
+            <ion-label>Espacio Fisico</ion-label>
+            
+            <ion-select (ionChange)="radioEspacioFisicoSelect($event)" [(ngModel)]="rd_espaciofisico_selected">
+              <ion-select-option *ngFor="let item of rd_list_espacios_fisicos" value="{{item.id}}">{{item.clave + ' - ' + item.descripcion}}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        
+          <ion-item>
+            <ion-text type="text" class="text-bl">{{product_unidad_administrativa}}</ion-text>
+          </ion-item>
+            <ion-item>              
+              <ion-label>Unidad Administrativa</ion-label>
+              <ion-select (ionChange)="radioUnidadAdministrativaSelect($event)" [(ngModel)]="rd_uadministrativa_selected">
+                <ion-select-option *ngFor="let item of rd_list_uadministrativas" value="{{item.id}}">{{item.clave + ' - ' + item.name}}</ion-select-option>
+              </ion-select>
+            </ion-item>
+          
+            <ion-item>       
+            <ion-label color="secondary" style="font-weight: bold;">Observaciones de Actualización</ion-label>
+            </ion-item>
+            
+            <ion-item>
+            <ion-textarea color="dark" [(ngModel)]="product_observaciones" name="product_observaciones">
+            </ion-textarea>       
+            </ion-item>
+
+          <ion-button expand="full" color="danger" (click)="updateProducto()" >
+            <ion-icon name="save"  slot="start"></ion-icon>
+            GUARDAR CAMBIOS
+          </ion-button>
+        
+      </div>
+
+           
+
+    </ion-card-content>
+  </ion-card>
+
+
+  
+
+
+
+</div>
+
+  
+</ion-content>

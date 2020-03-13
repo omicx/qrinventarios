@@ -15,6 +15,18 @@ import {Base64ToGallery} from '@ionic-native/base64-to-gallery/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
 
+import { NativeStorage } from '@ionic-native/native-storage/ngx';
+//import { LandingPageModule } from './pages/landing/landing.module';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+
+import { environment } from 'src/environments/environment';
+import { AuthenticationService} from './services/authentication.service';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+
+import * as firebase from 'firebase';
+
+firebase.initializeApp(environment.firebase);
+
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -24,6 +36,10 @@ import { HttpClientModule } from '@angular/common/http';
     AppRoutingModule, 
     NgxQRCodeModule,
     HttpClientModule,
+    FormsModule,
+    ReactiveFormsModule,
+    AngularFireAuthModule,
+    
 
   ],
   providers: [
@@ -31,7 +47,10 @@ import { HttpClientModule } from '@angular/common/http';
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     BarcodeScanner,
-    Base64ToGallery
+    Base64ToGallery,
+    NativeStorage,
+    AuthenticationService,
+
   ],
   bootstrap: [AppComponent]
 })

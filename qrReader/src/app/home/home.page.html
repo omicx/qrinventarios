@@ -3,41 +3,13 @@
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    
     <ion-title>
       INVENTORY APP
-    </ion-title>
-    
+    </ion-title>    
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true" padding>
-
-  <ion-item>
-    <ion-input type="text" [(ngModel)]="api_url"></ion-input>
-  </ion-item>
-
-
-  <ion-list>
-    <ion-list-header>
-      <ion-label>
-        Selecciona Opcion
-      </ion-label>
-    </ion-list-header>
-
-    <ion-item>
-      <ion-label>Inventarios Fisicos</ion-label>
-      <ion-select (ionChange)="radioEventoSelect($event)" [(ngModel)]="rd_inventario_selected">
-        <ion-select-option *ngFor="let item of rd_list_inventarios" value="{{item.id}}">{{item.id + ' - ' + item.descripcion}}</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-  </ion-list>
-
-  <ion-item>
-    <ion-label position="stacked">Scanned Code Value</ion-label>
-    <ion-input type="text" placeholder="QR CODE Data" [(ngModel)]="qrData"></ion-input>
-  </ion-item>
 
   <ion-button expand="full" (click)="scanCode()" color="secondary">
     <ion-icon name="qr-code-outline"></ion-icon>
@@ -51,80 +23,243 @@
       <ion-segment-button value="canvas">
         <ion-label>Datos Generales</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="img">
+      <ion-segment-button value="espacio_fisico">
         <ion-label>Espacio Fisico</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="url">
-        <ion-label>Observaciones</ion-label>
+      <ion-segment-button value="observaciones">
+        <ion-label>Agregar a Inventario</ion-label>
       </ion-segment-button>
       <ion-segment-button value="firma">
-        <ion-label>Actualizar</ion-label>
+        <ion-label>Firmar</ion-label>
       </ion-segment-button>
     </ion-segment>
 
-  
-
-  <ion-card *ngIf="qrData" text-center>
-    <ngx-qrcode [qrc-element-type]="elementType" [qrc-value] = "qrData" qrc-class="my-code">
-    </ngx-qrcode>    
-  </ion-card>
-
   <ion-card *ngIf="scannedCode">
+    <ion-card-content>  
+      <ion-grid *ngIf="elementType==='canvas'">
+        <ion-row class="" >
+          <ion-col>
+            <ion-item class="ionic-text-center">
+              <!-- <div *ngIf="qrData">
+                <ngx-qrcode [qrc-element-type]="elementType" [qrc-value] = "qrData" qrc-class="my-code">
+                </ngx-qrcode>
+              </div> -->
+              <img class="displayed"  height="150px" width="150px" src="{{product_img_url}}">
+            </ion-item>
+          </ion-col>
+         
+        </ion-row>
+        
+        <ion-row>
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Producto</ion-label>
+            <ion-textarea color="dark" [(ngModel)]="product_description" readonly>
+          </ion-textarea>       
+          </ion-item> 
+          </ion-col>
+        </ion-row>
 
-    <ion-card-content>      
-      Result from Scan: {{scannedCode}} <br>
-      <ion-item class="ionic-text-center">
-          <ion-img [src]="product_img_url"></ion-img>        
-      </ion-item>
+        <ion-row>    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Numero Serie</ion-label>
+            <ion-text type="text">{{product_num_serie}} </ion-text>
+          </ion-item>
+          </ion-col>
 
-      <ion-item>
-        <ion-chip>
-          <ion-label color="secondary" style="font-weight: bold;">IU</ion-label>
-        </ion-chip>
-        <ion-text color="dark" >{{product_identificador_unico}}</ion-text>
-      </ion-item>
-    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Marca</ion-label>
+            <ion-text type="text">{{product_marca}} </ion-text>
+          </ion-item>
+          </ion-col>
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Folio Factura</ion-label>
+            <ion-text type="text">{{product_folio_factura}} </ion-text>           
+          </ion-item>
+          </ion-col>
+        </ion-row>
 
-        <ion-item>
-        <ion-chip>
-          <ion-label color="secondary" style="font-weight: bold;">Producto</ion-label>
-        </ion-chip>
-        <ion-textarea color="dark" [(ngModel)]="product_description" readonly>
-      </ion-textarea>       
-      </ion-item> 
+        <ion-row>    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Material Tipo</ion-label>
+            <ion-text type="text">{{product_material_tipo}}</ion-text>
+          </ion-item>
+          </ion-col>
 
-      <ion-item>
-        <ion-chip>
-          <ion-label color="secondary" style="font-weight: bold;">Numero Serie</ion-label>
-        </ion-chip>
-        <ion-text type="text">{{product_num_serie}} </ion-text>
-      </ion-item> 
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Color</ion-label>
+            <ion-text type="text" >{{product_color}}</ion-text>
+          </ion-item>
+          </ion-col>
+          
+        </ion-row>
 
-      <ion-item>
-        <ion-chip>
-          <ion-label color="secondary" style="font-weight: bold;">Marca</ion-label>
-        </ion-chip>
-        <ion-text type="text">{{product_marca}} </ion-text>
-      </ion-item> 
-     
+        <ion-row>    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Tipo Adquisicion</ion-label>
+            <ion-text type="text">{{product_tipo_adquisicion}}</ion-text>
+          </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-label color="secondary" style="font-weight: bold;">Estado</ion-label>
+              <ion-text type="text">{{product_estado_fisico}}</ion-text>           
+            </ion-item>
+            </ion-col>
+        
+        </ion-row>
 
-      <ion-item *ngIf="elementType==='url'">
-        <ion-chip>
-          <ion-label color="secondary" style="font-weight: bold;">Observaciones</ion-label>
-        </ion-chip>
-        <ion-textarea color="dark" [(ngModel)]="product_observaiones" name="product_observaiones">
-      </ion-textarea>       
-      </ion-item> 
+
+        <ion-row>    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Resguardante</ion-label>
+            <ion-text type="text">{{product_resguardante}} </ion-text>
+          </ion-item>
+          </ion-col>        
+          
+        </ion-row>
+
+        <ion-row>    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Responsable</ion-label>
+            <ion-text type="text">{{product_responsable}} </ion-text>
+          </ion-item>
+          </ion-col>        
+          
+        </ion-row>
+       
+      </ion-grid>
+
+      <ion-grid *ngIf="elementType==='espacio_fisico'">
+        <ion-row>    
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Grupo</ion-label>
+            <ion-text type="text">{{product_grupo_bien}}</ion-text>
+          </ion-item>
+          </ion-col>
+
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Categoria</ion-label>
+            <ion-text type="text" >{{product_grupo_bien_categoria}}</ion-text>
+          </ion-item>
+          </ion-col>
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Subcategoria</ion-label>
+            <ion-text type="text">{{product_grupo_bien_subcategoria}}</ion-text>           
+          </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row >
+          <ion-col>
+            <ion-item>
+              <ion-label color="secondary" style="font-weight: bold;">Partida</ion-label>
+              <ion-text type="text">{{dataProducto.clasificador_objeto_gasto.name}} </ion-text>
+            </ion-item>            
+          </ion-col>
+        </ion-row>
+        <ion-row>
+          <ion-col>
+          <ion-item>
+            <ion-label color="secondary" style="font-weight: bold;">Concepto partida</ion-label>
+            <ion-text type="text">{{dataProducto.clasificador_objeto_gasto.nombre}} </ion-text>
+          </ion-item>          
+          </ion-col>
+        </ion-row>
+
+        <ion-row >
+          <ion-col>
+            <ion-item>
+              <ion-label color="secondary" style="font-weight: bold;">Espacio Fisico</ion-label>
+              <ion-text type="text">{{product_espacio_fisico}} </ion-text>
+            </ion-item>            
+          </ion-col>
+          
+        </ion-row>
 
 
+        <ion-row >
+          <ion-col>
+            <ion-item>
+              <ion-label color="secondary" style="font-weight: bold;">Unidad Administrativa</ion-label>
+            </ion-item>          
+            <ion-item>
+              <ion-text type="text">{{product_unidad_administrativa}} </ion-text>
+            </ion-item>          
+            </ion-col>
+          
+        </ion-row>
+
+
+
+        
+
+
+
+
+      </ion-grid>
+
+      <ion-grid *ngIf="elementType==='observaciones'">
+        <ion-row>
+          <ion-label color="secondary" style="color:red;">
+            Esta Seguro de agregar el producto X al inventario {{rd_inventario_selected}}
+          </ion-label>
+        </ion-row>
+
+        <ion-row>
+          <ion-list>
+            <ion-list-header>
+              <ion-label>
+                Selecciona Opcion
+              </ion-label>
+            </ion-list-header>
+        
+            <ion-item>
+              <ion-label>Inventarios Fisicos</ion-label>
+              <ion-select (ionChange)="radioEventoSelect($event)" [(ngModel)]="rd_inventario_selected">
+                <ion-select-option *ngFor="let item of rd_list_inventarios" value="{{item.id}}">{{item.id + ' - ' + item.descripcion}}</ion-select-option>
+              </ion-select>
+            </ion-item>
+        
+          </ion-list>
+        </ion-row>
+
+        <ion-row>
+          <ion-col>
+          <ion-label color="secondary" style="font-weight: bold;">Escribe Observaciones</ion-label>
+          <ion-textarea color="dark" [(ngModel)]="product_observaiones" name="product_observaiones">
+        </ion-textarea>       
+        </ion-col>
+        </ion-row>
+        <ion-row>    
+          <ion-button expand="full" color="tertiary" (click)="insertInventarioFisico()" >
+            <ion-icon name="save" slot="start"></ion-icon>
+            ACTUALIZAR
+          </ion-button>
+        </ion-row>
+      </ion-grid>
+
+      <ion-grid *ngIf="elementType==='firma'">
+        <ion-row>
+          <div>
+            Mostrar canvas para dibujar una firma
+          </div>
+
+        </ion-row>
+      </ion-grid>
       
       
-      
-
-      <ion-button expand="full" color="tertiary" (click)="insertInventarioFisico()" *ngIf="elementType==='firma'">
-        <ion-icon name="save" slot="start"></ion-icon>
-        SAVE
-      </ion-button>
 
     </ion-card-content>
   </ion-card>

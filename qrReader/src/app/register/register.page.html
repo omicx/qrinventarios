@@ -1,23 +1,12 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>Login</ion-title>
+    <ion-title>Registrar Usuario</ion-title>
   </ion-toolbar>
 </ion-header>
  
 <ion-content padding>
-  <ion-card class="welcome-card">
+  <form class="form" [formGroup]="validations_form"  (ngSubmit)="tryRegister(validations_form.value)">
     
-    <img class="displayed"  height="150px" width="150px" src="/assets/logo-itst.png">
-    <ion-card-header>
-      <ion-card-title>Inventory APP</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Inventory Application Register and Check</p>
-    </ion-card-content>
-  </ion-card>
-
-
-  <form class="form" [formGroup]="validations_form"  (ngSubmit)="loginUser(validations_form.value)">
  
     <ion-item>
       <ion-label  position="floating" color="primary">Email</ion-label>
@@ -43,12 +32,10 @@
       </ng-container>
     </div>
  
-
-    <ion-button  class="submit-btn" expand="full" color="primary" type="submit"  [disabled]="!validations_form.valid">Log In</ion-button>
- 
+    
+    <ion-button  class="submit-btn" type="submit"  [disabled]="!validations_form.valid">Register</ion-button>
     <label class="error-message">{{errorMessage}}</label>
+    <label class="success-message">{{successMessage}}</label>
   </form>
-  <p class="go-to-register">
-    No account yet? <a (click)="goToRegisterPage()">Create an account.</a>
-  </p>
+  <p class="go-to-login">Already have an account? <a (click)="goLoginPage()">Try to LogIn.</a></p>
 </ion-content>

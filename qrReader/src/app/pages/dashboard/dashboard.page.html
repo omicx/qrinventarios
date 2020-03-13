@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content padding>
+  
+
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <div *ngIf="user != undefined">
+          <ion-icon name="person-circle-outline"></ion-icon>
+            Welcome  <strong>{{ user["first_name"]  }} {{ user["last_name"]  }} </strong>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="full" color="primary" (click)="registrarInventario()">Registrar Inventario</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button color="primary" expand="full" color="primary" >Listar Inventario</ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+  
+</ion-content>

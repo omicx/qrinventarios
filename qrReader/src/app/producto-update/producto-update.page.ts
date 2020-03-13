@@ -11,18 +11,22 @@ import { EnvService } from '../services/env.service';
 
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-producto-update',
+  templateUrl: './producto-update.page.html',
+  styleUrls: ['./producto-update.page.scss'],
 })
-export class HomePage implements OnInit, OnDestroy, AfterViewInit {
+export class ProductoUpdatePage implements OnInit, OnDestroy, AfterViewInit  {
 
   backButtonSubscription; 
-
   //qrData = '1583738944000002';
   qrData = '';
   scannedCode = null;
-  rd_list_inventarios:any;
+
+  rd_list_personas:any;
+  rd_list_responsables:any;
+  rd_list_espacios_fisicos:any;
+  rd_list_uadministrativas:any;
+
   ver_segmentos:string = "ocultar";
  
   barcodeScannerOptions: BarcodeScannerOptions;
@@ -30,13 +34,23 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
   api_url = this.env.API_SERVER;
 
-  rd_inventario_selected:any=null;
-  rd_inventario_valued : boolean = false;
+  //variables para los radios y valores de los mismos
+  rd_personas_selected:any=null;
+  rd_personas_valued : boolean = false;
+
+  rd_responsable_selected:any=null;
+  rd_responsable_valued : boolean = false;
   
+  rd_espaciofisico_selected:any=null;
+  rd_espaciofisico_valued : boolean = false;
+
+  rd_uadministrativa_selected:any=null;
+  rd_uadministrativa_valued : boolean = false;
+
   //atributos del producto
   product_identificador_unico : any;
   product_description : any;
-  product_observaiones : any;
+  product_observaciones : any;
   product_espacio_fisico : any;
   product_folio_factura : any;
   product_resguardante : any;
@@ -50,14 +64,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   product_material_tipo :any;
   product_espacio_fisico_nombre :any;
   product_unidad_administrativa : any;
-
   product_unidad_administrativa_id :any;
   product_espacio_fisico_id :any;
   product_responsable_id :any;
   product_persona_id :any;
-
-
-
   inventario_fisico_nombre : any;
   product_id : any;
   dataProducto : any;
@@ -65,6 +75,8 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
   product_img_url:any;
   product_num_serie:any;
   product_marca:any;
+  product_partida :any;
+  product_partida_concepto :any;
     
   constructor(
     private platform: Platform, 
@@ -84,12 +96,14 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
     this.product_id = "";
     this.product_description = "";
-    this.rd_inventario_selected="";
 
-    //this.rd_inventario_valued = true;//quitar solo para iniciar bien la app
-    this.loadInventarios();
+    this.rd_personas_selected="";
+    this.rd_responsable_selected="";
+    this.rd_espaciofisico_selected="";
+    this.rd_uadministrativa_selected="";
+ 
 
-    //this.scanCode();//quitar solo para iniciar bien la app
+
     
   }//construct
 
@@ -105,29 +119,79 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     this.backButtonSubscription.unsubscribe();
   }
 
-  radioEventoSelect(event) {
-    this.rd_inventario_selected     = event.detail.value;
-    this.rd_inventario_valued = true;
-    this.inventario_fisico_nombre = event.detail.text;    
+  radioPersonasSelect(event) {
+    this.rd_personas_selected = event.detail.value;
+    this.rd_personas_valued = true;
   }//function
 
+  radioResponsablesSelect(event) {
+    this.rd_responsable_selected = event.detail.value;
+    this.rd_responsable_valued = true;
+  }//function
+
+  radioEspacioFisicoSelect(event) {
+    this.rd_espaciofisico_selected = event.detail.value;
+    this.rd_espaciofisico_valued = true;
+  }//function
+
+  radioUnidadAdministrativaSelect(event) {
+    this.rd_uadministrativa_selected = event.detail.value;
+    this.rd_uadministrativa_valued = true;
+  }//function
+  
 
 
-  loadInventarios(){    
+  loadPersonas(){
     let data:Observable<any>;
-    this.http.get(this.api_url+'/web-services/get-inventarios-list')
+    this.http.post(this.api_url+'/web-services/personas-list','')
     .subscribe(result => { 
-                            this.rd_list_inventarios = result;
+                            this.rd_list_personas = result;
                },
                error  => { 
-                            alert("Error en loadInventarios: " + error.status + " "+ error.message)
+                            this.msgToastError("Error en loadInventarios: " + error.status + " "+ error.message)
+               }
+    );  
+  }//function
+
+  loadUnidadAdministrativas(){    
+    let data:Observable<any>;
+    this.http.post(this.api_url+'/web-services/unidad-administrativas-list','')
+    .subscribe(result => { 
+                            this.rd_list_uadministrativas = result;
+               },
+               error  => { 
+                    this.msgToastError("Error en loadInventarios: " + error.status + " "+ error.message)
+               }
+    );  
+  }//function
+
+  loadResponsables(){    
+    let data:Observable<any>;
+    this.http.post(this.api_url+'/web-services/personas-list','')
+    .subscribe(result => { 
+                            this.rd_list_responsables = result;
+               },
+               error  => { 
+                this.msgToastError("Error en loadInventarios: " + error.status + " "+ error.message)
+               }
+    );  
+  }//function
+
+  loadEspaciosFisicos(){
+    let data:Observable<any>;
+    this.http.post(this.api_url+'/web-services/espacio-fisicos-list','')
+    .subscribe(result => { 
+                            this.rd_list_espacios_fisicos = result;
+               },
+               error  => { 
+                this.msgToastError("Error en loadInventarios: " + error.status + " "+ error.message)
                }
     );  
   }//function
 
   
    scanCode() {
-
+      
     this.barcodeScanner
       .scan()
       .then(barcodeData => {
@@ -144,11 +208,17 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
      this.scannedCode = this.qrData;
      this.qrData = this.scannedCode;
      this.product_id = this.scannedCode; 
-     this.product_identificador_unico = this.qrData; 
-      */
+     this.product_identificador_unico = this.qrData; */
+
 
      this.getDataProduct();
      this.ver_segmentos = "visualizar";
+
+
+     this.loadPersonas();
+     this.loadResponsables();
+     this.loadUnidadAdministrativas();
+     this.loadEspaciosFisicos();
      
 
   }//function
@@ -164,11 +234,11 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
       let identificador_unico = btoa(this.product_id); //encripta el id para mandarlo
 
-      //console.log(identificador_unico);
+      console.log(identificador_unico);
 
       let datosenviados = {
         identificador_unico   : identificador_unico,
-        inventario_id         : this.rd_inventario_selected
+        inventario_id         : ""
       };
   
     this.http.post(this.api_url+'/web-services/get-data-product', 
@@ -176,7 +246,7 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
     pipe( finalize( () => loading.dismiss() ) ).
     subscribe(dataRec => {
 
-      //console.log( dataRec );
+      console.log( dataRec );
 
         this.dataProducto = dataRec.body;
 
@@ -198,7 +268,9 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
         this.product_grupo_bien_subcategoria = this.dataProducto.grupo_bien_subcategoria.name;
         this.product_espacio_fisico        = this.dataProducto.espacio_fisico.clave + " "+this.dataProducto.espacio_fisico.descripcion; 
         this.product_unidad_administrativa = this.dataProducto.unidad_administrativa.clave +" "+ this.dataProducto.unidad_administrativa.name;
-        
+        this.product_observaciones = this.dataProducto.observaciones;
+        this.product_partida = this.dataProducto.clasificador_objeto_gasto.name;
+        this.product_partida_concepto = this.dataProducto.clasificador_objeto_gasto.nombre;
         this.product_unidad_administrativa_id = this.dataProducto.unidad_administrativa.id;
         this.product_espacio_fisico_id = this.dataProducto.espacio_fisico.id;
         this.product_responsable_id  = this.dataProducto.Responsable.id;
@@ -218,10 +290,10 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
 
   
-  insertInventarioFisico(){
+  updateProducto(){
 
-    if(this.rd_inventario_valued == false) {
-      this.msgToast("Selecciona Opcion de Inventario");
+    if(this.rd_uadministrativa_valued == false) {
+      this.msgToast("Selecciona Unidad Administrativa");
       return;
     }
 
@@ -230,34 +302,28 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
     let datosenviados = {
       identificador_unico    : ident_unico,
-      producto_id            : this.product_id,
-      observaciones          : this.product_observaiones,
-      inventario_fisico_id   : this.rd_inventario_selected,
-      unidad_administrativa_id : this.product_unidad_administrativa_id,
-      espacio_fisico_id      : this.product_espacio_fisico_id,
-      responsable_id         : this.product_responsable_id,
-      persona_id             : this.product_persona_id
+      observaciones          : this.product_observaciones,
+      unidad_administrativa_id : this.rd_uadministrativa_selected,
+      espacio_fisico_id      : this.rd_espaciofisico_selected,
+      responsable_id         : this.rd_responsable_selected,
+      persona_id             : this.rd_personas_selected //resguardante
     };
 
-  this.http.post(this.api_url+'/web-services/insert-inventario-fisico', 
+  this.http.post(this.api_url+'/web-services/update-resguardo', 
   JSON.stringify(datosenviados),{observe: 'response'})
      .subscribe(dataRec => {
       this.resultData = dataRec.body;
-      //console.log(this.resultData);
+      console.log(this.resultData);
 
       if( this.resultData['action'] == "SUCCESS"){
           this.msgToast( this.resultData['message'] );
       }else{
         this.msgToastError( this.resultData['message'] );
-      }
-      
+      }      
       }, 
       error => {
-        this.msgToastError( error.status +"  "+ error.message);
-        //this.product_description = "error post -> "+ error;
-     });   
-
-
+        alert( error.status +"  "+ error.message);
+     });
   }//function
 
 
@@ -297,4 +363,6 @@ export class HomePage implements OnInit, OnDestroy, AfterViewInit {
 
 
 
-}//class
+
+}//function
+

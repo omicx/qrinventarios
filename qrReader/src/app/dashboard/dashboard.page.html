@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Dashboard</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col text-center>
+        Welcome <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col text-center>
+        <strong> {{userEmail}} </strong>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="full" color="primary" (click)="registrarInventario()">
+          <ion-icon name="add-circle-outline"></ion-icon>
+          Registrar Inventario</ion-button>
+      </ion-col>
+      <ion-col>
+        
+        <ion-button color="primary" expand="full" color="primary" >
+          <ion-icon name="list-outline"></ion-icon>
+          Listar Inventario</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="full" color="primary" (click)="productoUpdate()">
+          <ion-icon name="create-outline"></ion-icon>
+          Actualizar Producto</ion-button>
+      </ion-col>
+      <ion-col>
+        <ion-button color="primary" expand="full" color="primary" >
+          <ion-icon name="search-outline"></ion-icon>
+          Consulta Inventario</ion-button>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>  
+  
+  
+</ion-content>
+<ion-footer>
+    <ion-button color="primary" expand="full" color="danger" (click)="logout()" >Logout</ion-button>
+</ion-footer>

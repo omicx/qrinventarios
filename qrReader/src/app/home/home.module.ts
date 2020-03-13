@@ -6,6 +6,7 @@ import { RouterModule } from '@angular/router';
 
 import { NgxQRCodeModule } from 'ngx-qrcode2';
 
+
 import { HomePage } from './home.page';
 
 @NgModule({
@@ -19,7 +20,7 @@ import { HomePage } from './home.page';
         component: HomePage
       },
     ]),
-    NgxQRCodeModule
+    NgxQRCodeModule,
   ],
   declarations: [HomePage]
 })
